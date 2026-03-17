@@ -1,0 +1,23 @@
+{
+  "name": "youtube-downloader",
+  "version": "1.0.0",
+  "description": "Aplikasi sederhana untuk download video/audio YouTube menggunakan Node.js + yt-dlp",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "youtube-dl-exec": "^3.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
+  }
+}
