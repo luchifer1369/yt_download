@@ -1,83 +1,213 @@
-/* Reset default styles */
+/* public/style.css */
+
+/* --- Reset & Font Dasar --- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #0d0d17;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
+  background-color: #0d1117; /* Warna latar gelap khas GitHub/Discord */
+  color: #c9d1d9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 
+/* --- Container Utama --- */
+.container {
+  background: #161b22;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid #30363d;
+  transition: transform 0.3s ease;
+}
+
+.container:hover {
+  transform: translateY(-5px);
+}
+
+/* --- Judul --- */
 h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    text-align: center;
-    text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+  text-align: center;
+  color: #f0f6fc;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(88, 166, 255, 0.5); /* Efek Neon Biru */
 }
 
+h1 span {
+  color: #58a6ff; /* Warna aksen biru */
+}
+
+/* --- Form Elements --- */
 form {
-    background: rgba(18, 18, 38, 0.7);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 30px rgba(0, 255, 255, 0.5);
-    width: 100%;
-    max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
+  font-size: 0.9rem;
+  color: #8b949e;
+  font-weight: 600;
 }
 
 input[type="text"],
 input[type="url"],
 select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #00ffcc;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    transition: border-color 0.3s;
+  padding: 12px 15px;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #f0f6fc;
+  font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
-input[type="text"]:focus,
-input[type="url"]:focus,
+input:focus,
 select:focus {
-    border-color: #00cc99;
-    outline: none;
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
 }
 
+/* --- Button --- */
 button {
-    background: linear-gradient(45deg, #00ffcc, #00cc99);
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.3s, transform 0.3s;
+  padding: 15px;
+  background: linear-gradient(135deg, #1f6feb 0%, #58a6ff 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 button:hover {
-    background: linear-gradient(45deg, #00cc99, #00ffcc);
-    transform: scale(1.05);
+  filter: brightness(1.1);
+  box-shadow: 0 5px 15px rgba(88, 166, 255, 0.4);
 }
 
-#status {
-    margin-top: 20px;
-    font-size: 1.2rem;
-    text-align: center;
-    transition: opacity 0.3s;
+button:disabled {
+  background: #30363d;
+  color: #8b949e;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --- SEKTOR PROGRESS BAR --- */
+.download-section {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Container utama bar, sembunyi saat awal */
+.progress-container {
+  display: none; /* Disembunyikan oleh JS di awal */
+  width: 100%;
+  height: 24px;
+  background-color: #0d1117;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+  overflow: hidden;
+  position: relative;
+  /* Tambahkan sedikit bayangan dalam agar terlihat dalam */
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* --- BAR RGB ( PELANGI MENGALIR ) --- */
+.progress-bar {
+  height: 100%;
+  width: 0%; /* Diatur oleh JS */
+  
+  /* 1. Definisi Warna Pelangi (Linear Gradient) */
+  background: linear-gradient(
+    90deg, 
+    #ff0000, #ff7f00, #ffff00, #00ff00, 
+    #0000ff, #4b0082, #9400d3, #ff0000 /* Kembali ke merah agar sambungan halus */
+  );
+  
+  /* 2. Ukuran Background diperbesar agar bisa digeser */
+  background-size: 200% 100%;
+  
+  border-radius: 12px;
+  transition: width 0.3s ease-out;
+  position: relative;
+  
+  /* 3. Animasi Menggeser Background (Efek RGB Mengalir) */
+  /* Jauhkan efek neon agar bar pelangi terlihat jelas */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  
+  /* Menjalankan animasi 'rgb-flow' terus menerus */
+  animation: rgb-flow 3s linear infinite;
+}
+
+/* 4. Definisi Keyframes untuk Menggeser Warna */
+@keyframes rgb-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%; /* Menggeser ke kanan penuh */
+  }
+}
+
+/* Teks Status dan Persen */
+.status-meta {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #8b949e;
+  margin-top: 5px;
+}
+
+#statusText {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+#statusText.success { color: #3fb950; font-weight: bold; }
+#statusText.error { color: #f85149; font-weight: bold; }
+
+/* Gaya unik untuk Angka Persen */
+.percent-wrapper {
+  background: #21262d;
+  color: #58a6ff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace; /* Gaya digital */
+  min-width: 60px;
+  text-align: center;
 }

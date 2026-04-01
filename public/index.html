@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,74 +7,89 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>🎵 YouTube Downloader wincent</h1>
+    <div class="container">
+      <h1>YouTube <span>Downloader</span><br>by hazz</h1>
 
-    <form id="downloadForm">
-      <label for="path"
-        >Lokasi Penyimpanan (kosongkan untuk folder default):</label
-      >
-      <input
-        type="text"
-        id="path"
-        name="path"
-        placeholder="C:/Users/YourName/Downloads" />
+      <form id="downloadForm">
+        <div class="form-group">
+          <label>Lokasi Penyimpanan</label>
+          <input
+            type="text"
+            id="path"
+            placeholder= >
+        </div>
 
-      <label for="url">Link YouTube:</label>
-      <input
-        type="url"
-        id="url"
-        name="url"
-        placeholder="https://youtube.com/watch?v=xxxx"
-        required />
+        <div class="form-group">
+          <label>Link YouTube:</label>
+          <input type="url" id="url" placeholder="https://..." required />
+        </div>
 
-      <label for="format">Pilih Format:</label>
-      <select id="format" name="format">
-        <option value="mp3">MP3 (Audio)</option>
-        <option value="mp4">MP4 (Video)</option>
-      </select>
+        <div class="form-group">
+          <label>Format:</label>
+          <select id="format">
+            <option value="mp3">MP3 (Audio)</option>
+            <option value="mp4">MP4 (Video)</option>
+          </select>
+        </div>
 
-      <button type="submit">Download</button>
-    </form>
+        <button type="submit" id="btnDownload">Download</button>
+      </form>
 
-    <div id="status"></div>
+      <div class="download-section">
+        <div class="progress-container" id="progCont">
+          <div class="progress-bar" id="progBar"></div>
+        </div>
+        <div class="status-meta">
+          <div id="statusText">Siap...</div>
+          <div class="percent-wrapper" id="percentText">0%</div>
+        </div>
+      </div>
+    </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-      document
-        .getElementById("downloadForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+      const socket = io();
+      const form = document.getElementById("downloadForm");
+      const progBar = document.getElementById("progBar");
+      const progCont = document.getElementById("progCont");
+      const statusText = document.getElementById("statusText");
+      const percentText = document.getElementById("percentText");
+      const btn = document.getElementById("btnDownload");
 
-          const pathValue = document.getElementById("path").value;
-          const urlValue = document.getElementById("url").value;
-          const formatValue = document.getElementById("format").value;
+      socket.on("downloadProgress", (data) => {
+        progCont.style.display = "block";
+        progBar.style.width = data.progress + "%";
+        percentText.innerText = Math.round(data.progress) + "%";
+        statusText.innerText = "⏳ Sedang mendownload...";
+      });
 
-          document.getElementById("status").innerText =
-            "⏳ Sedang mendownload...";
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault(); // Mencegah refresh halaman
+        btn.disabled = true;
+        statusText.innerText = "⏳ Memulai...";
+        progBar.style.width = "0%";
+        progCont.style.display = "none";
 
-          try {
-            const res = await fetch("/download", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                path: pathValue,
-                url: urlValue,
-                format: formatValue,
-              }),
-            });
-
-            const data = await res.json();
-            if (data.success) {
-              document.getElementById("status").innerText =
-                "✅ Download selesai!";
-            } else {
-              document.getElementById("status").innerText =
-                "❌ Gagal download: " + data.message;
-            }
-          } catch (err) {
-            document.getElementById("status").innerText =
-              "❌ Error: " + err.message;
-          }
-        });
+        try {
+          const res = await fetch("/download", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              path: document.getElementById("path").value,
+              url: document.getElementById("url").value,
+              format: document.getElementById("format").value,
+            }),
+          });
+          const data = await res.json();
+          statusText.innerText = data.success
+            ? "✅ Selesai!"
+            : "❌ Gagal: " + data.message;
+        } catch (err) {
+          statusText.innerText = "❌ Error koneksi";
+        } finally {
+          btn.disabled = false;
+        }
+      });
     </script>
   </body>
 </html>
