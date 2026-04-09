@@ -15,8 +15,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/download", async (req, res) => {
   try {
-    let { path: userPath, url, format } = req.body;
+    let { path: userPath, url } = req.body;
 
+    // Menentukan lokasi penyimpanan
     let finalSavePath =
       userPath && userPath.trim() !== ""
         ? path.normalize(userPath)
@@ -28,28 +29,19 @@ app.post("/download", async (req, res) => {
 
     const outputFile = path.join(finalSavePath, `%(title)s.%(ext)s`);
 
-    // KONFIGURASI OPSI TERBAIK
+    // Konfigurasi khusus untuk MP3 saja
     const dlOptions = {
       output: outputFile,
       noPlaylist: true,
       noCheckCertificates: true,
-      // Menghindari error youtube yang sering muncul belakangan ini
       addHeader: [
         "referer:https://www.google.com/",
         "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
       ],
+      format: "bestaudio/best",
+      extractAudio: true,
+      audioFormat: "mp3",
     };
-
-    if (format === "mp3") {
-      dlOptions.format = "bestaudio/best";
-      dlOptions.extractAudio = true;
-      dlOptions.audioFormat = "mp3";
-    } else {
-      // Mengambil format MP4 yang paling kompatibel (sudah ada video + audio)
-      // agar tidak butuh ffmpeg untuk menggabungkan
-      dlOptions.format =
-        "bestvideo[ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/best[ext=mp4]/best";
-    }
 
     const child = youtubedl.exec(url, dlOptions);
 
@@ -61,7 +53,6 @@ app.post("/download", async (req, res) => {
       }
     });
 
-    // Menangani error dari proses yt-dlp secara lebih detail
     child.on("error", (err) => {
       console.error("Child Process Error:", err);
     });
@@ -72,7 +63,7 @@ app.post("/download", async (req, res) => {
     console.error("❌ DETAIL ERROR:", error);
     res.json({
       success: false,
-      message: "Gagal: Periksa koneksi atau update yt-dlp",
+      message: "Gagal: Periksa koneksi atau link YouTube",
     });
   }
 });
